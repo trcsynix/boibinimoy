@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>বইবিনিময় — Smart Book Exchange</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #181c27;
+  --card: #1e2335;
+  --border: #2a3048;
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.12);
+  --green: #2ecc71;
+  --green-dim: rgba(46,204,113,0.12);
+  --red: #e74c3c;
+  --red-dim: rgba(231,76,60,0.12);
+  --blue: #3498db;
+  --blue-dim: rgba(52,152,219,0.12);
+  --text: #e8eaf2;
+  --muted: #6b7494;
+  --accent: #7c6af5;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Hind Siliguri', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-text {
+  font-family: 'Tiro Bangla', serif;
+  font-size: 1.5rem;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-text span { color: var(--text); }
+
+.logo-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; letter-spacing: 0.06em; }
+
+.nav-section { padding: 12px 12px 4px; }
+.nav-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); padding: 0 8px; margin-bottom: 4px; text-transform: uppercase; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+  position: relative;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--amber-dim); color: var(--amber); }
+.nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sidebar-user {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0;
+}
+.sidebar-user:hover { background: var(--card); }
+
+.user-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--amber), #e67e22);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--bg);
+  flex-shrink: 0;
+}
+
+.user-name-sm { font-size: 0.85rem; font-weight: 600; }
+.user-pts { font-size: 0.72rem; color: var(--amber); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.search-wrap {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 16px 9px 40px;
+  color: var(--text);
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-wrap input:focus { border-color: var(--amber); }
+.search-wrap input::placeholder { color: var(--muted); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; pointer-events: none; }
+
+.topbar-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+.notif-btn {
+  width: 38px; height: 38px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.notif-btn:hover { border-color: var(--amber); }
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--red);
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+
+.add-book-btn {
+  background: var(--amber);
+  color: var(--bg);
+  border: none;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.add-book-btn:hover { background: #e09b12; transform: translateY(-1px); }
+
+/* ── CONTENT ── */
+.content {
+  padding: 28px;
+  flex: 1;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 24px;
+}
+.page-title {
+  font-family: 'Tiro Bangla', serif;
+  font-size: 1.6rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.page-title em { font-style: italic; color: var(--amber); }
+.page-subtitle { font-size: 0.85rem; color: var(--muted); }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.stat-card:hover { border-color: var(--amber); transform: translateY(-2px); }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.stat-card.s1::before { background: var(--amber); }
+.stat-card.s2::before { background: var(--green); }
+.stat-card.s3::before { background: var(--blue); }
+.stat-card.s4::before { background: var(--accent); }
+
+.stat-icon { font-size: 1.8rem; margin-bottom: 12px; }
+.stat-num { font-family: 'Tiro Bangla', serif; font-size: 1.9rem; font-weight: 700; color: var(--text); }
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.stat-trend { font-size: 0.72rem; color: var(--green); margin-top: 8px; }
+
+/* ── GRID LAYOUT ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ── SECTION BOX ── */
+.section-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.box-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.box-title { font-size: 0.95rem; font-weight: 700; }
+.box-link { font-size: 0.78rem; color: var(--amber); cursor: pointer; text-decoration: none; }
+.box-link:hover { text-decoration: underline; }
+
+/* ── BOOK CARD ── */
+.book-list { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+
+.book-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.book-row:hover { background: rgba(255,255,255,0.04); }
+
+.book-thumb {
+  width: 42px; height: 56px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.book-info { flex: 1; min-width: 0; }
+.book-name { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.book-author { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.book-meta-row { display: flex; gap: 6px; margin-top: 6px; }
+
+.chip {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+.chip-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+.chip-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(46,204,113,0.2); }
+.chip-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(231,76,60,0.2); }
+.chip-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(52,152,219,0.2); }
+.chip-muted { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+
+.book-action {
+  background: var(--amber-dim);
+  color: var(--amber);
+  border: 1px solid rgba(245,166,35,0.2);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.book-action:hover { background: var(--amber); color: var(--bg); }
+
+/* ── POINT METER ── */
+.point-card {
+  background: linear-gradient(135deg, #1e2335, #2a1f3d);
+  border: 1px solid rgba(124,106,245,0.3);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.point-card::before {
+  content: '✦';
+  position: absolute;
+  font-size: 8rem;
+  color: rgba(124,106,245,0.05);
+  right: -20px; bottom: -20px;
+}
+.point-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.point-num { font-family: 'Tiro Bangla', serif; font-size: 3rem; font-weight: 700; color: var(--accent); }
+.point-sub { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+.point-bar-wrap { margin-top: 16px; background: rgba(255,255,255,0.06); border-radius: 4px; height: 6px; overflow: hidden; }
+.point-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--amber)); border-radius: 4px; transition: width 1s ease; }
+.point-info { display: flex; justify-content: space-between; margin-top: 6px; }
+.point-info span { font-size: 0.7rem; color: var(--muted); }
+
+/* ── REQUEST ITEM ── */
+.request-list { display: flex; flex-direction: column; }
+.request-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: background 0.15s;
+}
+.request-item:last-child { border-bottom: none; }
+.request-item:hover { background: rgba(255,255,255,0.02); }
+
+.req-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  color: var(--bg);
+}
+
+.req-body { flex: 1; }
+.req-name { font-size: 0.88rem; font-weight: 600; }
+.req-msg { font-size: 0.8rem; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+.req-time { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+
+.req-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.btn-accept {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(46,204,113,0.2);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Hind Siliguri', sans-serif;
+  transition: all 0.15s;
+}
+.btn-accept:hover { background: var(--green); color: var(--bg); }
+
+.btn-reject {
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Hind Siliguri', sans-serif;
+  transition: all 0.15s;
+}
+.btn-reject:hover { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+
+/* ── HISTORY TABLE ── */
+.history-table { width: 100%; border-collapse: collapse; }
+.history-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.history-table td {
+  padding: 14px 16px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(42,48,72,0.5);
+}
+.history-table tr:last-child td { border-bottom: none; }
+.history-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ── RATING STARS ── */
+.stars { color: var(--amber); font-size: 0.8rem; letter-spacing: 1px; }
+
+/* ── NOTIF PANEL ── */
+.notif-panel {
+  position: fixed;
+  top: 64px; right: 0;
+  width: 360px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-bottom-left-radius: 12px;
+  z-index: 200;
+  max-height: 500px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: -8px 8px 32px rgba(0,0,0,0.4);
+}
+.notif-panel.open { display: block; }
+.notif-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.notif-header h3 { font-size: 0.95rem; font-weight: 700; }
+.notif-clear { font-size: 0.75rem; color: var(--amber); cursor: pointer; }
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(42,48,72,0.5);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.notif-item:hover { background: rgba(255,255,255,0.03); }
+.notif-item.unread { background: rgba(245,166,35,0.04); }
+.notif-item.unread::before { content: ''; width: 6px; height: 6px; background: var(--amber); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+
+.notif-icon { font-size: 1.2rem; flex-shrink: 0; }
+.notif-text { font-size: 0.82rem; line-height: 1.5; color: var(--text); }
+.notif-time { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 500px;
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-size: 1.05rem; font-weight: 700; }
+.modal-close {
+  width: 30px; height: 30px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.modal-close:hover { background: var(--red-dim); color: var(--red); }
+
+.modal-body { padding: 24px; }
+
+/* ── FORM ── */
+.form-group { margin-bottom: 18px; }
+.form-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; display: block; letter-spacing: 0.04em; }
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--amber); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select option { background: var(--card); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.upload-zone:hover { border-color: var(--amber); background: var(--amber-dim); }
+.upload-icon { font-size: 2rem; margin-bottom: 8px; }
+.upload-text { font-size: 0.82rem; color: var(--muted); }
+.upload-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+.condition-row { display: flex; gap: 10px; }
+.cond-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.cond-btn:hover { border-color: var(--amber); color: var(--amber); }
+.cond-btn.selected { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); font-weight: 600; }
+
+.type-row { display: flex; gap: 10px; }
+.type-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.type-btn.t-free.selected { background: var(--green-dim); border-color: var(--green); color: var(--green); font-weight: 600; }
+.type-btn.t-swap.selected { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); font-weight: 600; }
+.type-btn.t-sell.selected { background: var(--red-dim); border-color: var(--red); color: var(--red); font-weight: 600; }
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.btn-submit {
+  background: var(--amber);
+  color: var(--bg);
+  border: none;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-submit:hover { background: #e09b12; transform: translateY(-1px); }
+.btn-cancel {
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+/* ── SEARCH PAGE ── */
+.search-filters-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.filter-pill {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-pill:hover { border-color: var(--amber); color: var(--amber); }
+.filter-pill.active { background: var(--amber); border-color: var(--amber); color: var(--bg); font-weight: 600; }
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.book-big-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.book-big-card:hover { border-color: var(--amber); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+
+.book-cover {
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+}
+.cover-1 { background: linear-gradient(135deg, #2d1b00, #5a3800); }
+.cover-2 { background: linear-gradient(135deg, #0d2d1b, #1a5a3d); }
+.cover-3 { background: linear-gradient(135deg, #2d0d0d, #5a1a1a); }
+.cover-4 { background: linear-gradient(135deg, #0d1a2d, #1a3a5a); }
+.cover-5 { background: linear-gradient(135deg, #1a0d2d, #3a1a5a); }
+.cover-6 { background: linear-gradient(135deg, #2d2a00, #5a5400); }
+
+.cover-type {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+.ct-free { background: var(--green); color: var(--bg); }
+.ct-swap { background: var(--amber); color: var(--bg); }
+.ct-sell { background: var(--red); color: white; }
+
+.book-card-body { padding: 14px; }
+.bcb-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; }
+.bcb-author { font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
+
+.bcb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.bcb-user { display: flex; align-items: center; gap: 7px; }
+.mini-avatar {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--bg);
+}
+.bcb-uname { font-size: 0.73rem; color: var(--muted); }
+
+.bcb-rating { font-size: 0.72rem; color: var(--amber); }
+
+.request-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--amber-dim);
+  color: var(--amber);
+  border: 1px solid rgba(245,166,35,0.2);
+  padding: 8px;
+  border-radius: 7px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.request-btn:hover { background: var(--amber); color: var(--bg); }
+
+/* ── PROFILE PAGE ── */
+.profile-hero {
+  background: linear-gradient(135deg, var(--card), #2a1f3d);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.profile-hero::before {
+  content: '📚';
+  position: absolute;
+  font-size: 12rem;
+  right: -20px;
+  bottom: -30px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.profile-avatar-lg {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, var(--amber), #e67e22);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--bg);
+  flex-shrink: 0;
+  border: 3px solid rgba(245,166,35,0.3);
+}
+
+.profile-info { flex: 1; }
+.profile-name { font-family: 'Tiro Bangla', serif; font-size: 1.6rem; }
+.profile-joined { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+.profile-stats { display: flex; gap: 32px; margin-top: 16px; }
+.ps-item { text-align: center; }
+.ps-num { font-family: 'Tiro Bangla', serif; font-size: 1.5rem; color: var(--amber); }
+.ps-label { font-size: 0.72rem; color: var(--muted); }
+
+.profile-badges { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.badge-gold { background: rgba(245,166,35,0.15); color: var(--amber); border: 1px solid rgba(245,166,35,0.3); }
+.badge-trust { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  z-index: 1000;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.info { border-left: 3px solid var(--blue); }
+.toast.warn { border-left: 3px solid var(--amber); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+.empty-title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.empty-sub { font-size: 0.82rem; line-height: 1.6; }
+
+/* ── LOCATION TAG ── */
+.location-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+.location-tag::before { content: '📍'; font-size: 0.7rem; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page.active { animation: fadeSlide 0.3s ease; }
+
+.pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">📚 বই<span>বিনিময়</span></div>
+    <div class="logo-sub">Smart Book Exchange</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">মূল মেনু</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="icon">🏠</span> ড্যাশবোর্ড
+    </div>
+    <div class="nav-item" onclick="showPage('search', this)">
+      <span class="icon">🔍</span> বই খুঁজুন
+    </div>
+    <div class="nav-item" onclick="showPage('mybooks', this)">
+      <span class="icon">📖</span> আমার বই
+    </div>
+    <div class="nav-item" onclick="showPage('requests', this)">
+      <span class="icon">🔄</span> বিনিময় রিকোয়েস্ট
+      <span class="nav-badge" id="reqBadge">৩</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">ইতিহাস</div>
+    <div class="nav-item" onclick="showPage('history', this)">
+      <span class="icon">📋</span> বিনিময় ইতিহাস
+    </div>
+    <div class="nav-item" onclick="showPage('points', this)">
+      <span class="icon">⭐</span> পয়েন্ট সিস্টেম
+    </div>
+    <div class="nav-item" onclick="showPage('profile', this)">
+      <span class="icon">👤</span> প্রোফাইল
+    </div>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">র</div>
+    <div>
+      <div class="user-name-sm">রাহেলা বেগম</div>
+      <div class="user-pts">⭐ ৩৪০ পয়েন্ট</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="বইয়ের নাম, লেখক বা বিষয় লিখুন..." oninput="liveSearch(this.value)">
+    </div>
+    <div class="topbar-actions">
+      <div class="notif-btn" onclick="toggleNotif()">
+        🔔
+        <div class="notif-dot"></div>
+      </div>
+      <button class="add-book-btn" onclick="openModal()">+ বই যোগ করুন</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">স্বাগতম, <em>রাহেলা</em> 👋</div>
+        <div class="page-subtitle">আজকের তারিখ: শুক্রবার, ৫ জুন ২০২৬</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card s1">
+          <div class="stat-icon">📚</div>
+          <div class="stat-num">৭</div>
+          <div class="stat-label">আমার তালিকাভুক্ত বই</div>
+          <div class="stat-trend">↑ গত মাসে ২টি যোগ করা</div>
+        </div>
+        <div class="stat-card s2">
+          <div class="stat-icon">🔄</div>
+          <div class="stat-num">১২</div>
+          <div class="stat-label">সফল বিনিময়</div>
+          <div class="stat-trend">↑ মোট ১২ বার বিনিময়</div>
+        </div>
+        <div class="stat-card s3">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-num">৩৪০</div>
+          <div class="stat-label">বর্তমান পয়েন্ট</div>
+          <div class="stat-trend">↑ এই সপ্তাহে +৪০ পয়েন্ট</div>
+        </div>
+        <div class="stat-card s4">
+          <div class="stat-icon">🏅</div>
+          <div class="stat-num">৪.৮</div>
+          <div class="stat-label">রেটিং (১২ রিভিউ)</div>
+          <div class="stat-trend">★★★★★ বিশ্বস্ত পাঠক</div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-bottom:20px">
+        <!-- Recent Books -->
+        <div class="section-box">
+          <div class="box-header">
+            <span class="box-title">📖 সদ্য যুক্ত বই</span>
+            <a class="box-link" onclick="showPage('search', document.querySelector('[onclick*=search]'))">সব দেখুন →</a>
+          </div>
+          <div class="book-list" id="recentBooks">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="section-box">
+          <div class="box-header">
+            <span class="box-title">🔄 নতুন রিকোয়েস্ট</span>
+            <a class="box-link" onclick="showPage('requests', document.querySelector('[onclick*=requests]'))">সব দেখুন →</a>
+          </div>
+          <div class="request-list" id="dashRequests">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Point card -->
+      <div class="two-col">
+        <div class="point-card">
+          <div class="point-label">মোট পয়েন্ট ব্যালেন্স</div>
+          <div class="point-num">৩৪০</div>
+          <div class="point-sub">পরবর্তী লেভেলে যেতে আরও ৬০ পয়েন্ট দরকার</div>
+          <div class="point-bar-wrap">
+            <div class="point-bar" style="width: 85%"></div>
+          </div>
+          <div class="point-info">
+            <span>গোল্ড পাঠক</span>
+            <span>৩৪০/৪০০</span>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="box-header"><span class="box-title">🏆 পয়েন্ট কার্যকলাপ</span></div>
+          <div style="padding: 8px">
+            <div class="book-row">
+              <span style="font-size:1.2rem">📗</span>
+              <div class="book-info">
+                <div class="book-name" style="font-size:0.82rem">HSC Chemistry বই দিয়েছেন</div>
+                <div class="book-author">৩ দিন আগে</div>
+              </div>
+              <span style="color:var(--green);font-weight:700;font-size:0.88rem">+৫০ pts</span>
+            </div>
+            <div class="book-row">
+              <span style="font-size:1.2rem">📕</span>
+              <div class="book-info">
+                <div class="book-name" style="font-size:0.82rem">পথের পাঁচালী নিয়েছেন</div>
+                <div class="book-author">৫ দিন আগে</div>
+              </div>
+              <span style="color:var(--red);font-weight:700;font-size:0.88rem">-৩০ pts</span>
+            </div>
+            <div class="book-row">
+              <span style="font-size:1.2rem">📘</span>
+              <div class="book-info">
+                <div class="book-name" style="font-size:0.82rem">রেটিং বোনাস পেয়েছেন</div>
+                <div class="book-author">১ সপ্তাহ আগে</div>
+              </div>
+              <span style="color:var(--green);font-weight:700;font-size:0.88rem">+২০ pts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SEARCH PAGE ── -->
+    <div class="page" id="page-search">
+      <div class="page-header">
+        <div class="page-title">বই <em>খুঁজুন</em></div>
+        <div class="page-subtitle">১২,৪০০+ বই তালিকাভুক্ত রয়েছে</div>
+      </div>
+
+      <div class="search-filters-row" id="filterRow">
+        <button class="filter-pill active" onclick="filterBooks('all', this)">সব</button>
+        <button class="filter-pill" onclick="filterBooks('free', this)">বিনামূল্যে</button>
+        <button class="filter-pill" onclick="filterBooks('swap', this)">বিনিময়</button>
+        <button class="filter-pill" onclick="filterBooks('sell', this)">বিক্রয়</button>
+        <button class="filter-pill" onclick="filterBooks('textbook', this)">পাঠ্যবই</button>
+        <button class="filter-pill" onclick="filterBooks('literature', this)">সাহিত্য</button>
+        <button class="filter-pill" onclick="filterBooks('nearby', this)">📍 নিকটবর্তী</button>
+      </div>
+
+      <div class="books-grid" id="booksGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- ── MY BOOKS ── -->
+    <div class="page" id="page-mybooks">
+      <div class="page-header">
+        <div class="page-title">আমার <em>বই</em></div>
+        <div class="page-subtitle">আপনার তালিকাভুক্ত বইসমূহ</div>
+      </div>
+      <div class="section-box">
+        <div class="box-header">
+          <span class="box-title">তালিকাভুক্ত বই (৭)</span>
+          <button class="add-book-btn" onclick="openModal()" style="padding:7px 16px;font-size:0.8rem">+ নতুন বই যোগ করুন</button>
+        </div>
+        <div class="book-list" id="myBooksList"></div>
+      </div>
+    </div>
+
+    <!-- ── REQUESTS ── -->
+    <div class="page" id="page-requests">
+      <div class="page-header">
+        <div class="page-title">বিনিময় <em>রিকোয়েস্ট</em></div>
+        <div class="page-subtitle">আপনার কাছে আসা এবং পাঠানো রিকোয়েস্ট</div>
+      </div>
+      <div class="section-box" style="margin-bottom:20px">
+        <div class="box-header"><span class="box-title">📥 আসা রিকোয়েস্ট (৩)</span></div>
+        <div class="request-list" id="incomingReqs"></div>
+      </div>
+      <div class="section-box">
+        <div class="box-header"><span class="box-title">📤 পাঠানো রিকোয়েস্ট (২)</span></div>
+        <div class="request-list" id="outgoingReqs"></div>
+      </div>
+    </div>
+
+    <!-- ── HISTORY ── -->
+    <div class="page" id="page-history">
+      <div class="page-header">
+        <div class="page-title">বিনিময় <em>ইতিহাস</em></div>
+        <div class="page-subtitle">আপনার সকল সফল বিনিময়ের রেকর্ড</div>
+      </div>
+      <div class="section-box">
+        <div style="overflow-x:auto">
+          <table class="history-table" id="historyTable">
+            <thead>
+              <tr>
+                <th>বই</th>
+                <th>ধরন</th>
+                <th>প্রতিপক্ষ</th>
+                <th>তারিখ</th>
+                <th>পয়েন্ট</th>
+                <th>রেটিং</th>
+                <th>অবস্থা</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── POINTS ── -->
+    <div class="page" id="page-points">
+      <div class="page-header">
+        <div class="page-title">পয়েন্ট <em>সিস্টেম</em></div>
+        <div class="page-subtitle">পয়েন্ট অর্জন করুন, বই নিন বিনামূল্যে</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card s1"><div class="stat-icon">⭐</div><div class="stat-num">৩৪০</div><div class="stat-label">বর্তমান পয়েন্ট</div></div>
+        <div class="stat-card s2"><div class="stat-icon">📤</div><div class="stat-num">৪৯০</div><div class="stat-label">মোট অর্জিত</div></div>
+        <div class="stat-card s3"><div class="stat-icon">📥</div><div class="stat-num">১৫০</div><div class="stat-label">মোট ব্যবহৃত</div></div>
+        <div class="stat-card s4"><div class="stat-icon">🏆</div><div class="stat-num">গোল্ড</div><div class="stat-label">বর্তমান স্তর</div></div>
+      </div>
+      <div class="two-col">
+        <div class="section-box">
+          <div class="box-header"><span class="box-title">💰 পয়েন্ট অর্জনের উপায়</span></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div class="book-row"><span style="font-size:1.2rem">📚</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">নতুন বই তালিকাভুক্ত করলে</div><div class="book-author">প্রতিটি বইয়ের জন্য</div></div><span class="chip chip-green">+১০ পয়েন্ট</span></div>
+            <div class="book-row"><span style="font-size:1.2rem">🔄</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">বিনিময় সফলভাবে সম্পন্ন করলে</div><div class="book-author">প্রতিটি বিনিময়ের জন্য</div></div><span class="chip chip-green">+৫০ পয়েন্ট</span></div>
+            <div class="book-row"><span style="font-size:1.2rem">⭐</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">৫ স্টার রেটিং পেলে</div><div class="book-author">অপর পাঠক থেকে</div></div><span class="chip chip-green">+২০ পয়েন্ট</span></div>
+            <div class="book-row"><span style="font-size:1.2rem">🎯</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">বিনামূল্যে বই দিলে</div><div class="book-author">ফ্রি ডোনেশনের জন্য</div></div><span class="chip chip-green">+৩০ পয়েন্ট</span></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="box-header"><span class="box-title">🛒 পয়েন্ট ব্যবহার</span></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div class="book-row"><span style="font-size:1.2rem">📖</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">সাধারণ বই নিতে</div><div class="book-author">সাহিত্য, গল্প, উপন্যাস</div></div><span class="chip chip-amber">-৩০ পয়েন্ট</span></div>
+            <div class="book-row"><span style="font-size:1.2rem">🏫</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">পাঠ্যবই নিতে</div><div class="book-author">HSC, SSC, বিশ্ববিদ্যালয়</div></div><span class="chip chip-amber">-৫০ পয়েন্ট</span></div>
+            <div class="book-row"><span style="font-size:1.2rem">🌟</span><div class="book-info"><div class="book-name" style="font-size:0.85rem">বিরল বই নিতে</div><div class="book-author">সংগ্রহযোগ্য বই</div></div><span class="chip chip-amber">-১০০ পয়েন্ট</span></div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;margin-top:8px">
+              <div style="font-size:2rem;margin-bottom:8px">🏅</div>
+              <div style="font-size:0.9rem;font-weight:700;margin-bottom:4px">পরবর্তী লেভেল: প্লাটিনাম</div>
+              <div style="font-size:0.78rem;color:var(--muted)">আরও ৬০ পয়েন্ট দরকার</div>
+              <div class="point-bar-wrap" style="margin-top:12px"><div class="point-bar" style="width:85%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="page" id="page-profile">
+      <div class="profile-hero">
+        <div class="profile-avatar-lg">র</div>
+        <div class="profile-info">
+          <div class="profile-name">রাহেলা বেগম</div>
+          <div class="profile-joined">সদস্য হয়েছেন: জানুয়ারি ২০২৫ · <span style="color:var(--green)">✓ যাচাইকৃত</span></div>
+          <div class="profile-stats">
+            <div class="ps-item"><div class="ps-num">৭</div><div class="ps-label">তালিকাভুক্ত বই</div></div>
+            <div class="ps-item"><div class="ps-num">১২</div><div class="ps-label">বিনিময়</div></div>
+            <div class="ps-item"><div class="ps-num">৪.৮★</div><div class="ps-label">রেটিং</div></div>
+          </div>
+        </div>
+        <div class="profile-badges">
+          <span class="badge badge-gold">🏆 গোল্ড পাঠক</span>
+          <span class="badge badge-trust">✅ বিশ্বস্ত ব্যবহারকারী</span>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="section-box">
+          <div class="box-header"><span class="box-title">⭐ রিভিউ ও রেটিং</span></div>
+          <div style="padding:8px">
+            <div class="book-row"><div class="req-avatar" style="background:#e67e22;width:38px;height:38px;font-size:0.8rem;flex-shrink:0">স</div><div class="book-info"><div class="book-name" style="font-size:0.85rem">সাইফুল ইসলাম</div><div style="color:var(--amber);font-size:0.8rem">★★★★★</div><div class="book-author">"খুব ভালো অভিজ্ঞতা, বই ঠিকমতো পেয়েছি"</div></div></div>
+            <div class="book-row"><div class="req-avatar" style="background:#27ae60;width:38px;height:38px;font-size:0.8rem;flex-shrink:0">ন</div><div class="book-info"><div class="book-name" style="font-size:0.85rem">নাফিসা খানম</div><div style="color:var(--amber);font-size:0.8rem">★★★★☆</div><div class="book-author">"দ্রুত সাড়া দিয়েছেন, ধন্যবাদ"</div></div></div>
+            <div class="book-row"><div class="req-avatar" style="background:#8e44ad;width:38px;height:38px;font-size:0.8rem;flex-shrink:0">ত</div><div class="book-info"><div class="book-name" style="font-size:0.85rem">তামিম আহমেদ</div><div style="color:var(--amber);font-size:0.8rem">★★★★★</div><div class="book-author">"বইয়ের অবস্থা চমৎকার ছিল!"</div></div></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="box-header"><span class="box-title">⚙️ অ্যাকাউন্ট তথ্য</span></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div><div class="form-label">পূর্ণ নাম</div><div class="form-input" style="cursor:default;opacity:0.7">রাহেলা বেগম</div></div>
+            <div><div class="form-label">ইমেইল</div><div class="form-input" style="cursor:default;opacity:0.7">rahela@example.com</div></div>
+            <div><div class="form-label">মোবাইল</div><div class="form-input" style="cursor:default;opacity:0.7">+880 1712-345678 ✓</div></div>
+            <div><div class="form-label">এলাকা</div><div class="form-input" style="cursor:default;opacity:0.7">মিরপুর, ঢাকা</div></div>
+            <button class="btn-submit" style="width:100%;margin-top:4px">প্রোফাইল আপডেট করুন</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">
+    <h3>🔔 নোটিফিকেশন</h3>
+    <span class="notif-clear" onclick="clearNotifs()">সব পড়া হয়েছে</span>
+  </div>
+  <div id="notifList"></div>
+</div>
+
+<!-- ADD BOOK MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📚 নতুন বই যোগ করুন</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">বইয়ের নাম *</label>
+        <input class="form-input" id="bookTitle" type="text" placeholder="বইয়ের নাম লিখুন">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">লেখকের নাম *</label>
+          <input class="form-input" id="bookAuthor" type="text" placeholder="লেখকের নাম">
+        </div>
+        <div class="form-group">
+          <label class="form-label">শ্রেণি / বিষয়</label>
+          <select class="form-select" id="bookCategory">
+            <option>পাঠ্যবই (SSC)</option>
+            <option>পাঠ্যবই (HSC)</option>
+            <option>বিশ্ববিদ্যালয়</option>
+            <option>বাংলা সাহিত্য</option>
+            <option>ইসলামিক বই</option>
+            <option>বিজ্ঞান</option>
+            <option>অন্যান্য</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">বইয়ের ছবি</label>
+        <div class="upload-zone" onclick="simulateUpload()">
+          <div class="upload-icon" id="uploadIcon">📷</div>
+          <div class="upload-text" id="uploadText">ছবি আপলোড করতে ক্লিক করুন</div>
+          <div class="upload-sub">JPG, PNG — সর্বোচ্চ ৫MB</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">বইয়ের অবস্থা *</label>
+        <div class="condition-row">
+          <button class="cond-btn selected" onclick="selectCond(this)">✨ নতুনের মতো</button>
+          <button class="cond-btn" onclick="selectCond(this)">👍 ভালো</button>
+          <button class="cond-btn" onclick="selectCond(this)">📄 মাঝারি</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">বিনিময়ের ধরন *</label>
+        <div class="type-row">
+          <button class="type-btn t-free selected" onclick="selectType(this, 'free')">🎁 বিনামূল্যে</button>
+          <button class="type-btn t-swap" onclick="selectType(this, 'swap')">🔄 বিনিময়</button>
+          <button class="type-btn t-sell" onclick="selectType(this, 'sell')">💰 বিক্রয়</button>
+        </div>
+      </div>
+      <div class="form-group" id="priceGroup" style="display:none">
+        <label class="form-label">মূল্য (টাকা)</label>
+        <input class="form-input" type="number" placeholder="০">
+      </div>
+      <div class="form-group">
+        <label class="form-label">বিবরণ (ঐচ্ছিক)</label>
+        <textarea class="form-textarea" placeholder="বইটি সম্পর্কে কিছু লিখুন..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">বাতিল</button>
+      <button class="btn-submit" onclick="submitBook()">বই যোগ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg">সফলভাবে সম্পন্ন হয়েছে!</span>
+</div>
+
+<script>
+// ─── DATA ───
+const books = [
+  {id:1, title:'শেষের কবিতা', author:'রবীন্দ্রনাথ ঠাকুর', cat:'বাংলা সাহিত্য', type:'free', condition:'ভালো', emoji:'📖', coverClass:'cover-1', user:'রাহেলা', userInitial:'র', userColor:'#e67e22', location:'মিরপুর, ঢাকা', rating:'৪.৮', tag:'literature'},
+  {id:2, title:'Higher Math HSC', author:'Dr. A.K. Azad', cat:'পাঠ্যবই (HSC)', type:'swap', condition:'নতুনের মতো', emoji:'📗', coverClass:'cover-2', user:'সাইফুল', userInitial:'স', userColor:'#27ae60', location:'মোহাম্মদপুর', rating:'৪.৯', tag:'textbook'},
+  {id:3, title:'আরণ্যক', author:'বিভূতিভূষণ', cat:'বাংলা সাহিত্য', type:'sell', condition:'মাঝারি', emoji:'📕', coverClass:'cover-3', user:'নাফিসা', userInitial:'ন', userColor:'#e74c3c', location:'গুলশান', rating:'৪.৭', tag:'literature'},
+  {id:4, title:'Chemistry 1st Paper', author:'Hajari & Nag', cat:'পাঠ্যবই (HSC)', type:'swap', condition:'ভালো', emoji:'📘', coverClass:'cover-4', user:'তামিম', userInitial:'ত', userColor:'#3498db', location:'উত্তরা', rating:'৪.৫', tag:'textbook'},
+  {id:5, title:'লালসালু', author:'সৈয়দ ওয়ালীউল্লাহ', cat:'বাংলা সাহিত্য', type:'free', condition:'নতুনের মতো', emoji:'📙', coverClass:'cover-5', user:'মাহমুদা', userInitial:'ম', userColor:'#8e44ad', location:'বনানী', rating:'৫.০', tag:'literature'},
+  {id:6, title:'Biology 2nd Paper', author:'Prof. Gazi Azmal', cat:'পাঠ্যবই (HSC)', type:'sell', condition:'মাঝারি', emoji:'📒', coverClass:'cover-6', user:'জাহিদ', userInitial:'জ', userColor:'#16a085', location:'মিরপুর', rating:'৪.৬', tag:'textbook'},
+  {id:7, title:'পথের পাঁচালী', author:'বিভূতিভূষণ', cat:'বাংলা সাহিত্য', type:'free', condition:'ভালো', emoji:'📓', coverClass:'cover-1', user:'করিম', userInitial:'ক', userColor:'#d35400', location:'যাত্রাবাড়ী', rating:'৪.৮', tag:'literature'},
+  {id:8, title:'Physics 1st Paper', author:'Shahjahan Tapan', cat:'পাঠ্যবই (HSC)', type:'swap', condition:'নতুনের মতো', emoji:'📔', coverClass:'cover-2', user:'আলম', userInitial:'আ', userColor:'#2980b9', location:'ধানমণ্ডি', rating:'৪.৭', tag:'textbook'},
+];
+
+const requests = [
+  {name:'সাইফুল ইসলাম', initial:'স', color:'#27ae60', book:'শেষের কবিতা', msg:'"শেষের কবিতা" বইটির জন্য বিনিময়ের অনুরোধ করছি — আমি বিনিময়ে HSC বাংলা দিতে পারি।', time:'২ ঘণ্টা আগে'},
+  {name:'তামিম আহমেদ', initial:'ত', color:'#3498db', book:'আরণ্যক', msg:'"আরণ্যক" বইটির জন্য অনুরোধ করছি। আমার কাছে ইংরেজি সাহিত্যের বেশ কিছু বই আছে।', time:'৫ ঘণ্টা আগে'},
+  {name:'নাফিসা খানম', initial:'ন', color:'#e74c3c', book:'Chemistry 1st', msg:'Chemistry 1st Paper বইটি বিনামূল্যে নিতে চাই যদি দেওয়া সম্ভব হয়।', time:'গতকাল'},
+];
+
+const notifs = [
+  {icon:'🔄', text:'"শেষের কবিতা" বইটির জন্য সাইফুল ইসলাম বিনিময়ের অনুরোধ পাঠিয়েছেন।', time:'২ ঘণ্টা আগে', unread:true},
+  {icon:'⭐', text:'তামিম আহমেদ আপনাকে ৫ স্টার রেটিং দিয়েছেন।', time:'৩ ঘণ্টা আগে', unread:true},
+  {icon:'✅', text:'আপনার "HSC Chemistry" বইটির বিনিময় সফল হয়েছে! +৫০ পয়েন্ট যোগ হয়েছে।', time:'৫ ঘণ্টা আগে', unread:true},
+  {icon:'📦', text:'নাফিসা খানম আপনার বিনিময় অনুরোধ গ্রহণ করেছেন।', time:'গতকাল', unread:false},
+  {icon:'🎉', text:'অভিনন্দন! আপনি "গোল্ড পাঠক" ব্যাজ পেয়েছেন।', time:'২ দিন আগে', unread:false},
+];
+
+const history = [
+  {book:'HSC Chemistry', type:'দিয়েছেন', partner:'সাইফুল ইসলাম', date:'০২ জুন ২০২৬', pts:'+৫০', rating:'★★★★★', status:'সম্পন্ন'},
+  {book:'পথের পাঁচালী', type:'নিয়েছেন', partner:'মাহমুদা আক্তার', date:'২৮ মে ২০২৬', pts:'-৩০', rating:'★★★★☆', status:'সম্পন্ন'},
+  {book:'আরণ্যক', type:'বিক্রয়', partner:'করিম উদ্দিন', date:'২০ মে ২০২৬', pts:'+১০', rating:'★★★★★', status:'সম্পন্ন'},
+  {book:'Biology 2nd', type:'বিনিময়', partner:'জাহিদ হাসান', date:'১৫ মে ২০২৬', pts:'+৫০', rating:'★★★★☆', status:'সম্পন্ন'},
+  {book:'লালসালু', type:'দিয়েছেন', partner:'রিফাত হোসেন', date:'০৮ মে ২০২৬', pts:'+৩০', rating:'★★★★★', status:'সম্পন্ন'},
+];
+
+// ─── INIT ───
+function init() {
+  renderRecentBooks();
+  renderDashRequests();
+  renderBooksGrid(books);
+  renderMyBooks();
+  renderRequests();
+  renderHistory();
+  renderNotifs();
+}
+
+// ─── RENDER FUNCTIONS ───
+function getTypeChip(type) {
+  if(type==='free') return '<span class="chip chip-green">বিনামূল্যে</span>';
+  if(type==='swap') return '<span class="chip chip-amber">বিনিময়</span>';
+  return '<span class="chip chip-red">বিক্রয়</span>';
+}
+
+function renderRecentBooks() {
+  const el = document.getElementById('recentBooks');
+  el.innerHTML = books.slice(0,5).map(b=>`
+    <div class="book-row">
+      <div class="book-thumb" style="background:var(--card)">${b.emoji}</div>
+      <div class="book-info">
+        <div class="book-name">${b.title}</div>
+        <div class="book-author">${b.author}</div>
+        <div class="book-meta-row">${getTypeChip(b.type)}<span class="chip chip-muted">${b.cat}</span></div>
+      </div>
+      <button class="book-action" onclick="showToast('রিকোয়েস্ট পাঠানো হয়েছে ✓','success')">রিকোয়েস্ট</button>
+    </div>
+  `).join('');
+}
+
+function renderDashRequests() {
+  const el = document.getElementById('dashRequests');
+  el.innerHTML = requests.slice(0,2).map((r,i)=>`
+    <div class="request-item">
+      <div class="req-avatar" style="background:${r.color}">${r.initial}</div>
+      <div class="req-body">
+        <div class="req-name">${r.name}</div>
+        <div class="req-msg">${r.msg.substring(0,80)}...</div>
+        <div class="req-time">${r.time}</div>
+      </div>
+      <div class="req-actions">
+        <button class="btn-accept" onclick="acceptRequest(this, ${i})">✓</button>
+        <button class="btn-reject" onclick="rejectRequest(this)">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderBooksGrid(list) {
+  const el = document.getElementById('booksGrid');
+  if(!list.length) { el.innerHTML='<div class="empty-state" style="grid-column:span 3"><span class="empty-icon">🔍</span><div class="empty-title">কোনো বই পাওয়া যায়নি</div><div class="empty-sub">অন্য কীওয়ার্ড বা ফিল্টার ব্যবহার করুন</div></div>'; return; }
+  el.innerHTML = list.map(b=>`
+    <div class="book-big-card">
+      <div class="book-cover ${b.coverClass}">
+        ${b.emoji}
+        <span class="cover-type ct-${b.type}">${b.type==='free'?'বিনামূল্যে':b.type==='swap'?'বিনিময়':'বিক্রয়'}</span>
+      </div>
+      <div class="book-card-body">
+        <div class="bcb-title">${b.title}</div>
+        <div class="bcb-author">${b.author}</div>
+        <div class="book-meta-row"><span class="chip chip-muted">${b.cat}</span><span class="chip chip-muted">${b.condition}</span></div>
+        <div class="location-tag" style="margin-top:8px">${b.location}</div>
+        <div class="bcb-footer" style="margin-top:10px">
+          <div class="bcb-user">
+            <div class="mini-avatar" style="background:${b.userColor}">${b.userInitial}</div>
+            <span class="bcb-uname">${b.user}</span>
+          </div>
+          <span class="bcb-rating">★ ${b.rating}</span>
+        </div>
+        <button class="request-btn" onclick="showToast('বিনিময়ের অনুরোধ পাঠানো হয়েছে!','success')">বিনিময়ের অনুরোধ করুন</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMyBooks() {
+  const myBooks = books.slice(0,7);
+  const el = document.getElementById('myBooksList');
+  el.innerHTML = myBooks.map(b=>`
+    <div class="book-row">
+      <div class="book-thumb">${b.emoji}</div>
+      <div class="book-info">
+        <div class="book-name">${b.title}</div>
+        <div class="book-author">${b.author} · ${b.cat}</div>
+        <div class="book-meta-row">${getTypeChip(b.type)}<span class="chip chip-muted">${b.condition}</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button class="book-action" style="background:var(--blue-dim);color:var(--blue);border-color:rgba(52,152,219,0.2)" onclick="showToast('সম্পাদনা প্যানেল খুলছে...','info')">সম্পাদনা</button>
+        <button class="book-action" style="background:var(--red-dim);color:var(--red);border-color:rgba(231,76,60,0.2)" onclick="removeBook(this)">মুছুন</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderRequests() {
+  const inc = document.getElementById('incomingReqs');
+  inc.innerHTML = requests.map((r,i)=>`
+    <div class="request-item" id="req-${i}">
+      <div class="req-avatar" style="background:${r.color}">${r.initial}</div>
+      <div class="req-body">
+        <div class="req-name">${r.name} <span style="font-size:0.75rem;color:var(--muted);font-weight:400">→ "${r.book}"</span></div>
+        <div class="req-msg">${r.msg}</div>
+        <div class="req-time">${r.time}</div>
+      </div>
+      <div class="req-actions">
+        <button class="btn-accept" onclick="acceptRequest(this,${i})">✓ গ্রহণ</button>
+        <button class="btn-reject" onclick="rejectRequest(this)">✕ প্রত্যাখ্যান</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('outgoingReqs').innerHTML = `
+    <div class="request-item">
+      <div class="req-avatar" style="background:#27ae60">স</div>
+      <div class="req-body">
+        <div class="req-name">সাইফুল ইসলাম <span style="font-size:0.75rem;color:var(--muted);font-weight:400">→ "Higher Math HSC"</span></div>
+        <div class="req-msg">আমি Higher Math HSC বইটি চাই। আমার কাছে Physics বই আছে বিনিময়ের জন্য।</div>
+        <div class="req-time">৩ ঘণ্টা আগে · <span class="chip chip-amber" style="font-size:0.68rem">অপেক্ষায়</span></div>
+      </div>
+    </div>
+    <div class="request-item">
+      <div class="req-avatar" style="background:#8e44ad">ম</div>
+      <div class="req-body">
+        <div class="req-name">মাহমুদা আক্তার <span style="font-size:0.75rem;color:var(--muted);font-weight:400">→ "লালসালু"</span></div>
+        <div class="req-msg">লালসালু বইটি পেতে খুব আগ্রহী। কোনো বিনিময় থাকলে জানাবেন।</div>
+        <div class="req-time">গতকাল · <span class="chip chip-amber" style="font-size:0.68rem">অপেক্ষায়</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderHistory() {
+  const tbody = document.getElementById('historyBody');
+  tbody.innerHTML = history.map(h=>`
+    <tr>
+      <td><strong>${h.book}</strong></td>
+      <td>${h.type==='দিয়েছেন'?'<span class="chip chip-green">দিয়েছেন</span>':h.type==='নিয়েছেন'?'<span class="chip chip-amber">নিয়েছেন</span>':'<span class="chip chip-blue">'+h.type+'</span>'}</td>
+      <td>${h.partner}</td>
+      <td style="color:var(--muted)">${h.date}</td>
+      <td style="color:${h.pts.startsWith('+')?'var(--green)':'var(--red)'};font-weight:700">${h.pts}</td>
+      <td style="color:var(--amber)">${h.rating}</td>
+      <td><span class="chip chip-green">${h.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderNotifs() {
+  const el = document.getElementById('notifList');
+  el.innerHTML = notifs.map(n=>`
+    <div class="notif-item ${n.unread?'unread':''}">
+      <span class="notif-icon">${n.icon}</span>
+      <div>
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── INTERACTIONS ───
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  closeNotif();
+}
+
+function filterBooks(type, el) {
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  if(type==='all') renderBooksGrid(books);
+  else if(type==='nearby') renderBooksGrid(books.filter(b=>b.location.includes('মিরপুর')));
+  else if(type==='textbook') renderBooksGrid(books.filter(b=>b.tag==='textbook'));
+  else if(type==='literature') renderBooksGrid(books.filter(b=>b.tag==='literature'));
+  else renderBooksGrid(books.filter(b=>b.type===type));
+}
+
+function liveSearch(val) {
+  if(!val.trim()) { renderBooksGrid(books); return; }
+  const q = val.toLowerCase();
+  renderBooksGrid(books.filter(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)));
+  showPage('search', null);
+}
+
+function acceptRequest(btn, i) {
+  const item = document.getElementById('req-'+i) || btn.closest('.request-item');
+  item.style.opacity='0.5';
+  item.style.pointerEvents='none';
+  const cnt = parseInt(document.getElementById('reqBadge').textContent)-1;
+  document.getElementById('reqBadge').textContent = cnt>0?cnt:'';
+  if(cnt<=0) document.getElementById('reqBadge').style.display='none';
+  showToast('রিকোয়েস্ট গ্রহণ করা হয়েছে! +৫০ পয়েন্ট অর্জিত 🎉','success');
+}
+
+function rejectRequest(btn) {
+  const item = btn.closest('.request-item');
+  item.style.transition='all 0.3s'; item.style.opacity='0'; item.style.height='0'; item.style.overflow='hidden';
+  setTimeout(()=>item.remove(),300);
+  showToast('রিকোয়েস্ট প্রত্যাখ্যান করা হয়েছে।','info');
+}
+
+function removeBook(btn) {
+  const item = btn.closest('.book-row');
+  item.style.transition='all 0.3s'; item.style.opacity='0';
+  setTimeout(()=>item.remove(),300);
+  showToast('বইটি তালিকা থেকে মুছে ফেলা হয়েছে।','info');
+}
+
+// ─── MODAL ───
+function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function selectCond(btn) {
+  document.querySelectorAll('.cond-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function selectType(btn, type) {
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('priceGroup').style.display = type==='sell'?'block':'none';
+}
+
+function simulateUpload() {
+  document.getElementById('uploadIcon').textContent='✅';
+  document.getElementById('uploadText').textContent='ছবি আপলোড হয়েছে!';
+  showToast('ছবি সফলভাবে আপলোড হয়েছে।','success');
+}
+
+function submitBook() {
+  const title = document.getElementById('bookTitle').value.trim();
+  const author = document.getElementById('bookAuthor').value.trim();
+  if(!title||!author) { showToast('বইয়ের নাম ও লেখকের নাম দিন!','warn'); return; }
+  const cat = document.getElementById('bookCategory').value;
+  const types=['free','swap','sell'];
+  const type = types[document.querySelectorAll('.type-btn').indexOfSelected()] || 'free';
+  books.unshift({id:Date.now(),title,author,cat,type:'free',condition:'নতুনের মতো',emoji:'📚',coverClass:'cover-1',user:'রাহেলা',userInitial:'র',userColor:'#e67e22',location:'মিরপুর, ঢাকা',rating:'—',tag:'literature'});
+  renderBooksGrid(books);
+  renderRecentBooks();
+  renderMyBooks();
+  closeModal();
+  document.getElementById('bookTitle').value='';
+  document.getElementById('bookAuthor').value='';
+  showToast(`"${title}" সফলভাবে যোগ করা হয়েছে! +১০ পয়েন্ট 🎉`,'success');
+}
+
+// ─── NOTIF ───
+function toggleNotif() {
+  document.getElementById('notifPanel').classList.toggle('open');
+}
+function closeNotif() {
+  document.getElementById('notifPanel').classList.remove('open');
+}
+function clearNotifs() {
+  document.querySelectorAll('.notif-item').forEach(n=>n.classList.remove('unread'));
+  document.querySelector('.notif-dot').style.display='none';
+  showToast('সব নোটিফিকেশন পড়া হয়েছে।','info');
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  const icons = {success:'✅', info:'ℹ️', warn:'⚠️'};
+  document.getElementById('toastIcon').textContent = icons[type]||'✅';
+  document.getElementById('toastMsg').textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+// ─── CLOSE notif on outside click ───
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.notif-panel')&&!e.target.closest('.notif-btn'))
+    closeNotif();
+});
+
+// fix indexOfSelected
+NodeList.prototype.indexOfSelected = function(){ let i=0; for(let n of this){if(n.classList.contains('selected'))return i;i++;} return 0; };
+
+init();
+</script>
+</body>
+</html>
