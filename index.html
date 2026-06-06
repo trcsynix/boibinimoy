@@ -189,6 +189,22 @@ body{
 .bn-item:hover{color:var(--text);}
 .bn-item.active{color:var(--amber);}
 .bn-item .bn-icon{font-size:1.3rem;}
+.bn-item.bn-add .bn-icon{
+  background:var(--amber);
+  color:var(--bg);
+  width:42px;height:42px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  margin-top:-8px;
+  box-shadow:0 4px 14px rgba(245,166,35,0.4);
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+.bn-item.bn-add:hover .bn-icon,.bn-item.bn-add:active .bn-icon{
+  transform:scale(1.1);
+  box-shadow:0 6px 20px rgba(245,166,35,0.5);
+}
+.bn-item.bn-add{color:var(--amber);}
 .bn-badge{
   position:absolute;top:4px;right:8px;
   background:var(--red);color:white;
@@ -725,16 +741,16 @@ body{
 
   <div class="nav-section">
     <div class="nav-label">মূল মেনু</div>
-    <div class="nav-item active" onclick="showPage('dashboard',this)">
+    <div class="nav-item active" onclick="showPage('dashboard')">
       <span class="icon">🏠</span> ড্যাশবোর্ড
     </div>
-    <div class="nav-item" onclick="showPage('search',this)">
+    <div class="nav-item" onclick="showPage('search')">
       <span class="icon">🔍</span> বই খুঁজুন
     </div>
-    <div class="nav-item" onclick="showPage('mybooks',this)">
+    <div class="nav-item" onclick="showPage('mybooks')">
       <span class="icon">📖</span> আমার বই
     </div>
-    <div class="nav-item" onclick="showPage('requests',this)">
+    <div class="nav-item" onclick="showPage('requests')">
       <span class="icon">🔄</span> বিনিময় রিকোয়েস্ট
       <span class="nav-badge" id="reqBadge">৩</span>
     </div>
@@ -742,13 +758,13 @@ body{
 
   <div class="nav-section">
     <div class="nav-label">ইতিহাস</div>
-    <div class="nav-item" onclick="showPage('history',this)">
+    <div class="nav-item" onclick="showPage('history')">
       <span class="icon">📋</span> বিনিময় ইতিহাস
     </div>
-    <div class="nav-item" onclick="showPage('points',this)">
+    <div class="nav-item" onclick="showPage('points')">
       <span class="icon">⭐</span> পয়েন্ট সিস্টেম
     </div>
-    <div class="nav-item" onclick="showPage('profile',this)">
+    <div class="nav-item" onclick="showPage('profile')">
       <span class="icon">👤</span> প্রোফাইল
     </div>
   </div>
@@ -824,14 +840,14 @@ body{
         <div class="section-box">
           <div class="box-header">
             <span class="box-title">📖 সদ্য যুক্ত বই</span>
-            <a class="box-link" onclick="showPage('search', document.querySelector('.nav-item[onclick*=search]'))">সব দেখুন →</a>
+            <a class="box-link" onclick="showPage('search')">সব দেখুন →</a>
           </div>
           <div class="book-list" id="recentBooks"></div>
         </div>
         <div class="section-box">
           <div class="box-header">
             <span class="box-title">🔄 নতুন রিকোয়েস্ট</span>
-            <a class="box-link" onclick="showPage('requests', document.querySelector('.nav-item[onclick*=requests]'))">সব দেখুন →</a>
+            <a class="box-link" onclick="showPage('requests')">সব দেখুন →</a>
           </div>
           <div class="request-list" id="dashRequests"></div>
         </div>
@@ -1010,20 +1026,20 @@ body{
 
 <!-- BOTTOM NAV (mobile) -->
 <nav class="bottom-nav">
-  <div class="bn-item active" onclick="showPage('dashboard',this)" data-page="dashboard">
+  <div class="bn-item active" onclick="showPage('dashboard')" data-page="dashboard">
     <span class="bn-icon">🏠</span>হোম
   </div>
-  <div class="bn-item" onclick="showPage('search',this)" data-page="search">
+  <div class="bn-item" onclick="showPage('search')" data-page="search">
     <span class="bn-icon">🔍</span>খুঁজুন
   </div>
-  <div class="bn-item" onclick="openModal()">
+  <div class="bn-item bn-add" onclick="openModal()">
     <span class="bn-icon">➕</span>যোগ করুন
   </div>
-  <div class="bn-item" onclick="showPage('requests',this)" data-page="requests">
+  <div class="bn-item" onclick="showPage('requests')" data-page="requests">
     <span class="bn-icon">🔄</span>রিকোয়েস্ট
     <span class="bn-badge" id="bnBadge">৩</span>
   </div>
-  <div class="bn-item" onclick="showPage('profile',this)" data-page="profile">
+  <div class="bn-item" onclick="showPage('profile')" data-page="profile">
     <span class="bn-icon">👤</span>প্রোফাইল
   </div>
 </nav>
@@ -1308,15 +1324,14 @@ function renderNotifs(){
 }
 
 // ─── NAVIGATION ───
-function showPage(name, el){
+function showPage(name){
+  // hide all pages, show target
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
 
-  // sidebar nav highlight
+  // sidebar highlight
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const sidebarItem = el && el.classList && el.classList.contains('nav-item')
-    ? el
-    : document.querySelector(`.nav-item[onclick*="${name}"]`);
+  const sidebarItem = document.querySelector(`.nav-item[onclick*="'${name}'"]`);
   if(sidebarItem) sidebarItem.classList.add('active');
 
   // bottom nav highlight
