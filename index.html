@@ -604,6 +604,8 @@ body{
   .books-grid{grid-template-columns:repeat(2,1fr);}
   .two-col{grid-template-columns:1fr;}
   .content{padding:20px;}
+  /* Keep points stat 2-col on tablet */
+  #page-points .stats-row{grid-template-columns:repeat(2,1fr);}
 }
 
 /* ══════════════════════════════════════════════════════
@@ -614,7 +616,7 @@ body{
 
   .topbar{padding:0 16px;gap:10px;}
   .add-book-btn .btn-text{display:none;}
-  .add-book-btn::after{content:'+';}
+  .add-book-btn .btn-plus{display:inline;}
   .add-book-btn{padding:9px 14px;}
 
   .content{padding:16px;padding-bottom:calc(var(--bottombar-h) + 16px);}
@@ -656,6 +658,22 @@ body{
   /* book row on mobile */
   .book-row{gap:10px;}
   .book-action{padding:6px 10px;font-size:0.73rem;}
+
+  /* box-header wrap */
+  .box-header{flex-wrap:wrap;}
+
+  /* profile stats gap */
+  .profile-stats{gap:20px;}
+
+  /* upload zone compact */
+  .upload-zone{padding:20px;}
+
+  /* modal footer stack */
+  .modal-footer{flex-direction:column-reverse;}
+  .modal-footer .btn-submit,.modal-footer .btn-cancel{width:100%;text-align:center;}
+
+  /* points page stats keep 2-col */
+  #page-points .stats-row{grid-template-columns:repeat(2,1fr);}
 }
 
 /* ══════════════════════════════════════════════════════
@@ -663,8 +681,23 @@ body{
 ══════════════════════════════════════════════════════ */
 @media(max-width:374px){
   .stats-row{grid-template-columns:1fr;}
-  .bn-item{font-size:0.56rem;padding:6px 6px;}
-  .bn-item .bn-icon{font-size:1.15rem;}
+  #page-points .stats-row{grid-template-columns:repeat(2,1fr);}
+  .bn-item{font-size:0.56rem;padding:6px 4px;}
+  .bn-item .bn-icon{font-size:1.1rem;}
+  .page-title{font-size:1.15rem;}
+  .modal{border-radius:12px;}
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — IPAD LANDSCAPE / MID-TABLET (768px – 1023px)
+══════════════════════════════════════════════════════ */
+@media(min-width:768px) and (max-width:1023px){
+  .books-grid{grid-template-columns:repeat(3,1fr);}
+  .two-col{grid-template-columns:1fr 1fr;}
+  .stats-row{grid-template-columns:repeat(4,1fr);}
+  .content{padding:24px;}
+  /* notif panel partial width on tablet */
+  .notif-panel{width:380px;right:0;left:auto;}
 }
 
 /* ══════════════════════════════════════════════════════
@@ -673,6 +706,8 @@ body{
 @media(min-width:1400px){
   .books-grid{grid-template-columns:repeat(4,1fr);}
   .content{padding:32px 40px;}
+  .stats-row{gap:20px;}
+  .stat-num{font-size:2.1rem;}
 }
 </style>
 </head>
@@ -721,7 +756,7 @@ body{
   <div class="sidebar-user">
     <div class="user-avatar">র</div>
     <div>
-      <div class="user-name-sm">ইসলাম রত্ন</div>
+      <div class="user-name-sm">রাহেলা বেগম</div>
       <div class="user-pts">⭐ ৩৪০ পয়েন্ট</div>
     </div>
   </div>
@@ -743,7 +778,7 @@ body{
         <div class="notif-dot" id="notifDot"></div>
       </div>
       <button class="add-book-btn" onclick="openModal()">
-        <span class="btn-text">+ বই যোগ করুন</span>
+        <span class="btn-text">+ বই যোগ করুন</span><span class="btn-plus" style="display:none">+</span>
       </button>
     </div>
   </div>
@@ -754,7 +789,7 @@ body{
     <!-- ── DASHBOARD ── -->
     <div class="page active" id="page-dashboard">
       <div class="page-header">
-        <div class="page-title">স্বাগতম, <em>ইসলাম রত্ন</em> 👋</div>
+        <div class="page-title">স্বাগতম, <em>রাহেলা</em> 👋</div>
         <div class="page-subtitle">আজকের তারিখ: শুক্রবার, ৫ জুন ২০২৬</div>
       </div>
 
@@ -789,14 +824,14 @@ body{
         <div class="section-box">
           <div class="box-header">
             <span class="box-title">📖 সদ্য যুক্ত বই</span>
-            <a class="box-link" onclick="showPage('search',null)">সব দেখুন →</a>
+            <a class="box-link" onclick="showPage('search', document.querySelector('.nav-item[onclick*=search]'))">সব দেখুন →</a>
           </div>
           <div class="book-list" id="recentBooks"></div>
         </div>
         <div class="section-box">
           <div class="box-header">
             <span class="box-title">🔄 নতুন রিকোয়েস্ট</span>
-            <a class="box-link" onclick="showPage('requests',null)">সব দেখুন →</a>
+            <a class="box-link" onclick="showPage('requests', document.querySelector('.nav-item[onclick*=requests]'))">সব দেখুন →</a>
           </div>
           <div class="request-list" id="dashRequests"></div>
         </div>
@@ -935,7 +970,7 @@ body{
       <div class="profile-hero">
         <div class="profile-avatar-lg">র</div>
         <div class="profile-info">
-          <div class="profile-name">ইসলাম রত্ন</div>
+          <div class="profile-name">রাহেলা বেগম</div>
           <div class="profile-joined">সদস্য: জানুয়ারি ২০২৫ · <span style="color:var(--green)">✓ যাচাইকৃত</span></div>
           <div class="profile-stats">
             <div class="ps-item"><div class="ps-num">৭</div><div class="ps-label">তালিকাভুক্ত বই</div></div>
@@ -960,10 +995,10 @@ body{
         <div class="section-box">
           <div class="box-header"><span class="box-title">⚙️ অ্যাকাউন্ট তথ্য</span></div>
           <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
-            <div><div class="form-label">পূর্ণ নাম</div><div class="form-input" style="cursor:default;opacity:0.7">ইসলাম রত্ন</div></div>
-            <div><div class="form-label">ইমেইল</div><div class="form-input" style="cursor:default;opacity:0.7">islamratno@gmail.com</div></div>
-            <div><div class="form-label">মোবাইল</div><div class="form-input" style="cursor:default;opacity:0.7">+880 1858486948 ✓</div></div>
-            <div><div class="form-label">এলাকা</div><div class="form-input" style="cursor:default;opacity:0.7">কিশোরগঞ্জ, ঢাকা</div></div>
+            <div><div class="form-label">পূর্ণ নাম</div><div class="form-input" style="cursor:default;opacity:0.7">রাহেলা বেগম</div></div>
+            <div><div class="form-label">ইমেইল</div><div class="form-input" style="cursor:default;opacity:0.7">rahela@example.com</div></div>
+            <div><div class="form-label">মোবাইল</div><div class="form-input" style="cursor:default;opacity:0.7">+880 1712-345678 ✓</div></div>
+            <div><div class="form-label">এলাকা</div><div class="form-input" style="cursor:default;opacity:0.7">মিরপুর, ঢাকা</div></div>
             <button class="btn-submit" style="width:100%;margin-top:4px">প্রোফাইল আপডেট করুন</button>
           </div>
         </div>
@@ -1279,7 +1314,9 @@ function showPage(name, el){
 
   // sidebar nav highlight
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const sidebarItem = document.querySelector(`.nav-item[onclick*="${name}"]`);
+  const sidebarItem = el && el.classList && el.classList.contains('nav-item')
+    ? el
+    : document.querySelector(`.nav-item[onclick*="${name}"]`);
   if(sidebarItem) sidebarItem.classList.add('active');
 
   // bottom nav highlight
@@ -1306,6 +1343,9 @@ function closeSidebar(){
 function filterBooks(type,el){
   document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
+  // clear topbar search
+  const searchInput = document.querySelector('.search-wrap input');
+  if(searchInput) searchInput.value='';
   if(type==='all') renderBooksGrid(books);
   else if(type==='nearby') renderBooksGrid(books.filter(b=>b.location.includes('মিরপুর')));
   else if(type==='textbook') renderBooksGrid(books.filter(b=>b.tag==='textbook'));
@@ -1316,21 +1356,30 @@ function filterBooks(type,el){
 function liveSearch(val){
   if(!val.trim()){renderBooksGrid(books);return;}
   const q=val.toLowerCase();
-  renderBooksGrid(books.filter(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)));
+  const filtered=books.filter(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q));
   showPage('search',null);
+  // reset filter pills to 'all'
+  document.querySelectorAll('.filter-pill').forEach((p,i)=>p.classList.toggle('active',i===0));
+  renderBooksGrid(filtered);
 }
 
 // ─── REQUEST ACTIONS ───
 function acceptRequest(btn,i){
   const item=document.getElementById('req-'+i)||btn.closest('.request-item');
-  item.style.transition='all 0.3s';item.style.opacity='0.4';item.style.pointerEvents='none';
+  item.style.transition='all 0.3s';
+  item.style.opacity='0.35';
+  item.style.pointerEvents='none';
+  item.innerHTML='<div style="padding:8px 12px;font-size:0.8rem;color:var(--green)">✓ গ্রহণ করা হয়েছে — ব্যবহারকারীকে জানানো হবে।</div>';
   updateBadge(-1);
   showToast('রিকোয়েস্ট গ্রহণ করা হয়েছে! +৫০ পয়েন্ট 🎉','success');
 }
 function rejectRequest(btn){
   const item=btn.closest('.request-item');
-  item.style.transition='all 0.3s';item.style.opacity='0';item.style.maxHeight='0';item.style.overflow='hidden';
-  setTimeout(()=>item.remove(),300);
+  item.style.transition='all 0.35s ease';
+  item.style.opacity='0';
+  item.style.maxHeight=item.offsetHeight+'px';
+  requestAnimationFrame(()=>{item.style.maxHeight='0';item.style.padding='0';item.style.margin='0';item.style.overflow='hidden';});
+  setTimeout(()=>item.remove(),380);
   showToast('রিকোয়েস্ট প্রত্যাখ্যান করা হয়েছে।','info');
 }
 function removeBook(btn){
@@ -1342,9 +1391,19 @@ function removeBook(btn){
 function updateBadge(delta){
   const b1=document.getElementById('reqBadge');
   const b2=document.getElementById('bnBadge');
-  let cnt=parseInt(b1.textContent||'0')+delta;
-  if(cnt<=0){b1.style.display='none';b2.style.display='none';}
-  else{b1.textContent=cnt;b2.textContent=cnt;}
+  // parse current value (may be Bengali or Latin numerals)
+  const raw=b1.textContent.trim();
+  const latin={'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5'};
+  const asLatin=raw.split('').map(c=>latin[c]||c).join('');
+  let cnt=(parseInt(asLatin)||0)+delta;
+  if(cnt<=0){
+    b1.style.display='none';b2.style.display='none';
+  } else {
+    const bn=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+    const bnStr=String(cnt).split('').map(d=>bn[d]||d).join('');
+    b1.textContent=bnStr;b1.style.display='';
+    b2.textContent=bnStr;b2.style.display='';
+  }
 }
 
 // ─── MODAL ───
@@ -1371,13 +1430,41 @@ function submitBook(){
   const author=document.getElementById('bookAuthor').value.trim();
   if(!title||!author){showToast('বইয়ের নাম ও লেখকের নাম দিন!','warn');return;}
   const cat=document.getElementById('bookCategory').value;
-  books.unshift({id:Date.now(),title,author,cat,type:'free',condition:'নতুনের মতো',emoji:'📚',coverClass:'cover-1',user:'রাহেলা',userInitial:'র',userColor:'#e67e22',location:'মিরপুর, ঢাকা',rating:'—',tag:'literature'});
+  // detect selected type
+  let selectedType='free';
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    if(b.classList.contains('selected')){
+      if(b.classList.contains('t-swap')) selectedType='swap';
+      else if(b.classList.contains('t-sell')) selectedType='sell';
+      else selectedType='free';
+    }
+  });
+  // detect selected condition
+  let selectedCond='নতুনের মতো';
+  document.querySelectorAll('.cond-btn').forEach(b=>{
+    if(b.classList.contains('selected')) selectedCond=b.textContent.replace(/^[✨👍📄]\s*/,'').trim();
+  });
+  const emojis=['📚','📖','📗','📘','📙','📕','📒','📓'];
+  const emoji=emojis[Math.floor(Math.random()*emojis.length)];
+  const covers=['cover-1','cover-2','cover-3','cover-4','cover-5','cover-6'];
+  const coverClass=covers[Math.floor(Math.random()*covers.length)];
+  books.unshift({
+    id:Date.now(),title,author,cat,
+    type:selectedType,condition:selectedCond,
+    emoji,coverClass,
+    user:'রাহেলা',userInitial:'র',userColor:'#e67e22',
+    location:'মিরপুর, ঢাকা',rating:'নতুন',tag:'literature'
+  });
   renderBooksGrid(books);renderRecentBooks();renderMyBooks();
   closeModal();
+  // reset modal fields
   document.getElementById('bookTitle').value='';
   document.getElementById('bookAuthor').value='';
   document.getElementById('uploadIcon').textContent='📷';
   document.getElementById('uploadText').textContent='ছবি আপলোড করতে ক্লিক করুন';
+  document.getElementById('priceGroup').style.display='none';
+  document.querySelectorAll('.cond-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));
+  document.querySelectorAll('.type-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));
   showToast(`"${title}" সফলভাবে যোগ হয়েছে! +১০ পয়েন্ট 🎉`,'success');
 }
 
